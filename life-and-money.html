@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Life & Money – One Page Financial Game</title>
+<style>
+body{font-family:Arial;background:#0f172a;color:#e5e7eb;margin:0}
+.container{max-width:1200px;margin:auto;padding:20px}
+h1{text-align:center;margin-bottom:5px}
+.section{background:#111827;padding:15px;border-radius:12px;margin-bottom:15px}
+.flex{display:flex;flex-wrap:wrap;gap:15px}
+.box{flex:1 1 220px;background:#1f2933;padding:12px;border-radius:10px}
+button{padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
+.primary{background:#2563eb;color:#fff}
+.green{background:#16a34a;color:#fff}
+.yellow{background:#ca8a04;color:#000}
+.red{background:#dc2626;color:#fff}
+select,input{width:100%;padding:8px;border-radius:6px;margin-top:5px;background:#020617;color:#fff;border:1px solid #334155}
+#log{max-height:200px;overflow-y:auto;background:#020617;padding:10px;border-radius:8px;font-size:14px}
+.progress{background:#1e293b;border-radius:10px;overflow:hidden;height:14px}
+.progress-bar{background:#22c55e;height:100%;width:0%}
+.small{font-size:13px;opacity:.8}
+</style>
+</head>
+<body>
+<div id="loader" style="position:fixed;inset:0;background:#020617;display:flex;align-items:center;justify-content:center;z-index:9999;color:#fff;font-size:22px;font-weight:bold">Loading Life & Money…</div>
+<div id="manual" style="position:fixed;inset:0;background:#020617;display:none;z-index:9998;color:#e5e7eb;overflow:auto">
+  <div style="max-width:900px;margin:auto;padding:30px">
+    <h1>📘 How to Play – Life & Money</h1>
+
+<h2>🎯 Objective: How to Win</h2>
+<p>Your goal is to successfully manage your money across different life stages while keeping your <b>financial stress under control</b>.</p>
+<ul>
+<li>Achieve financial goals (Smartphone, Education, House, Retirement) <b>before their deadlines</b></li>
+<li>Maintain savings and positive cash flow</li>
+<li>Progress through all life stages without stress reaching 10</li>
+</ul>
+<p><b>You win by surviving all life stages with healthy finances and low stress.</b></p>
+
+<h2>💀 How You Lose</h2>
+<ul>
+<li>If your <b>Stress reaches 10</b>, the game ends immediately</li>
+<li>Repeatedly missing goals increases stress rapidly</li>
+<li>Heavy loans and uncontrolled spending cause burnout</li>
+</ul>
+
+<h2>🕹️ Game Features</h2>
+<ul>
+<li><b>Income System:</b> Income changes with age, stage, and skill investment</li>
+<li><b>Expenses:</b> Lifestyle choices reflect needs vs wants</li>
+<li><b>Savings:</b> Consistent saving improves stability</li>
+<li><b>Loans:</b> Short-term relief with long-term stress</li>
+<li><b>Life Events:</b> Random situations affect finances</li>
+<li><b>Goal Tracking:</b> Progress bars for each financial goal</li>
+</ul>
+
+<h2>📈 Stress Meter</h2>
+<ul>
+<li>Stress increases due to debt, emergencies, and poor planning</li>
+<li>Achieving goals and smart saving reduces stress</li>
+<li><b>Stress = 10 → Game Over</b></li>
+</ul>
+
+<h2>🧠 Core Concept of the Game</h2>
+<p>Life & Money is a financial life simulation designed to teach:</p>
+<ul>
+<li>Budgeting and money management</li>
+<li>Difference between needs and wants</li>
+<li>Short, medium, and long-term financial goals</li>
+<li>Life-cycle approach to personal finance</li>
+<li>How small decisions compound over time</li>
+</ul>
+
+<p><b>The game reflects real life:</b> disciplined choices lead to financial freedom, careless choices lead to stress.</p>
+
+<button class="primary" onclick="closeManual()">Start Playing</button>
+  </div>
+</div>
+<div class="container">
+<h1>💰 Life & Money</h1><div style="text-align:center;margin-bottom:10px"><button class="primary" onclick="openManual()">How to Play</button></div>
+<p class="small" style="text-align:center">Make financial decisions. Face consequences. Learn by doing.</p>
+
+<!-- STATUS -->
+<div class="section">
+<h2>Status</h2>
+<div class="flex">
+<div class="box">Age: <b id="age"></b></div>
+<div class="box">Life Stage: <b id="stage"></b></div>
+<div class="box">Cash: ₹<b id="cash"></b></div>
+<div class="box">Savings: ₹<b id="savings"></b></div>
+<div class="box">Income: ₹<b id="income"></b></div>
+<div class="box">Expenses: ₹<b id="expenses"></b></div>
+<div class="box">Loans: ₹<b id="loans"></b></div>
+<div class="box">Stress: <b id="stress"></b>/10</div>
+</div>
+</div>
+
+<!-- GOAL -->
+<div class="section">
+<h2>Current Financial Goal</h2>
+<div id="goalText"></div>
+<div class="progress"><div class="progress-bar" id="goalBar"></div></div>
+</div>
+
+<!-- DECISIONS -->
+<div class="section">
+<h2>Your Decisions (You Control Everything)</h2>
+<div class="flex">
+<div class="box">
+<label>Saving Rate (%)</label>
+<input type="range" min="0" max="30" step="10" id="saveRate" value="10">
+</div>
+<div class="box">
+<label>Lifestyle (Needs vs Wants)</label>
+<select id="lifestyle">
+<option value="0">Basic – Needs</option>
+<option value="5000">Comfort – Some Wants</option>
+<option value="10000">Luxury – Mostly Wants</option>
+</select>
+</div>
+<div class="box">
+<label>Skill Investment (Income Growth)</label>
+<select id="skill">
+<option value="0">None</option>
+<option value="5000">₹5,000 (Small Boost)</option>
+<option value="10000">₹10,000 (Big Boost)</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- BANK ACTIONS -->
+<div class="section">
+<h2>Bank Actions</h2>
+<div class="flex">
+<button class="green" onclick="takeLoan()">Take Loan ₹20,000</button>
+<button class="yellow" onclick="repayLoan()">Repay Loan ₹10,000</button>
+<button class="primary" onclick="moveToSavings()">Move ₹5,000 to Savings</button>
+<button class="red" onclick="withdrawSavings()">Withdraw ₹5,000</button>
+</div>
+</div>
+
+<!-- TIME CONTROL -->
+<div class="section">
+<h2>Time Control</h2>
+<button class="primary" onclick="advanceYear()">Advance 1 Year ▶</button>
+</div>
+
+<!-- EVENTS -->
+<div class="section">
+<h2>Life Events & Feedback</h2>
+<div id="log"></div>
+</div>
+</div>
+
+<script>
+let game={age:18,stage:'Student',cash:10000,savings:0,loans:0,stress:0,income:10000,expenses:8000,
+goal:{name:'Buy Smartphone',cost:30000,saved:0,deadline:3}};
+
+const stages=[
+{min:18,name:'Student',income:10000,exp:8000,goal:{name:'Buy Smartphone',cost:30000,deadline:3}},
+{min:23,name:'Early Career',income:30000,exp:20000,goal:{name:'Higher Education',cost:200000,deadline:4}},
+{min:31,name:'Family',income:50000,exp:40000,goal:{name:'Buy House',cost:1000000,deadline:6}},
+{min:46,name:'Peak Career',income:70000,exp:45000,goal:{name:'Retirement Fund',cost:1500000,deadline:6}}
+];
+
+const events=[
+()=>({t:'Medical emergency – ₹20,000',f:()=>pay(20000)}),
+()=>({t:'Bonus received +₹15,000',f:()=>game.cash+=15000}),
+()=>({t:'Impulse purchase – ₹10,000',f:()=>pay(10000)}),
+()=>({t:'Investment growth +10% savings',f:()=>game.savings*=1.1}),
+()=>({t:'Skill growth increased income',f:()=>game.income+=5000})
+];
+
+function pay(a){if(game.cash>=a)game.cash-=a;else{game.loans+=a-game.cash;game.cash=0;game.stress+=2;}}
+
+function advanceYear(){
+let saveRate=parseInt(saveRateEl.value)/100;
+let lifestyle=parseInt(lifestyleEl.value);
+let skill=parseInt(skillEl.value);
+
+game.cash+=game.income;
+pay(game.expenses+lifestyle);
+
+if(skill>0){pay(skill);game.income+=Math.floor(skill/2);log('Skill investment increased income');}
+
+let saveAmt=game.income*saveRate;
+if(game.cash>=saveAmt){game.cash-=saveAmt;game.savings+=saveAmt;game.goal.saved+=saveAmt;}else game.stress++;
+
+let e=events[Math.floor(Math.random()*events.length)]();log(e.t);e.f();
+
+game.goal.deadline--;
+if(game.goal.saved>=game.goal.cost){log('Goal achieved: '+game.goal.name);game.stress=Math.max(0,game.stress-2);} 
+if(game.goal.deadline===0 && game.goal.saved<game.goal.cost){log('Goal failed');game.stress+=3;}
+
+game.age++;
+stages.forEach(s=>{if(game.age>=s.min && game.stage!==s.name){game.stage=s.name;game.income=s.income;game.expenses=s.exp;game.goal={...s.goal,saved:0};log('Entered '+s.name+' stage');}});
+
+if(game.stress>=10){alert('Game Over: Financial Stress');location.reload();}
+render();}
+
+function takeLoan(){game.cash+=20000;game.loans+=20000;game.stress++;log('Loan taken');render();}
+function repayLoan(){if(game.cash>=10000&&game.loans>0){game.cash-=10000;game.loans-=10000;log('Loan repaid');}render();}
+function moveToSavings(){if(game.cash>=5000){game.cash-=5000;game.savings+=5000;log('Moved money to savings');}render();}
+function withdrawSavings(){if(game.savings>=5000){game.savings-=5000;game.cash+=5000;log('Withdrew money from savings');}render();}
+
+function render(){age.textContent=game.age;stage.textContent=game.stage;cash.textContent=Math.round(game.cash);savings.textContent=Math.round(game.savings);income.textContent=game.income;expenses.textContent=game.expenses;loans.textContent=game.loans;stress.textContent=game.stress;goalText.textContent=`${game.goal.name}: ₹${Math.round(game.goal.saved)}/${game.goal.cost}`;goalBar.style.width=Math.min(100,(game.goal.saved/game.goal.cost)*100)+'%';}
+
+function log(m){logEl.innerHTML+='• '+m+'<br>';logEl.scrollTop=logEl.scrollHeight;}
+
+const saveRateEl=document.getElementById('saveRate');
+const lifestyleEl=document.getElementById('lifestyle');
+const skillEl=document.getElementById('skill');
+const logEl=document.getElementById('log');
+
+render();log('Game started. You control every decision.');setTimeout(()=>{document.getElementById('loader').style.display='none';document.getElementById('manual').style.display='block';},1200);
+function openManual(){document.getElementById('manual').style.display='block'}
+function closeManual(){document.getElementById('manual').style.display='none'}
+</script>
+</body>
+</html>
