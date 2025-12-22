@@ -6,9 +6,7 @@
   <title>Life & Money – Advanced Budgeting Simulator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg:#0b1220;--card:#121a2f;--accent:#22c55e;--accent2:#38bdf8;--warn:#f59e0b;--danger:#ef4444;--text:#e5e7eb;--muted:#94a3b8;
-    }
+    :root{--bg:#0b1220;--card:#121a2f;--accent:#22c55e;--accent2:#38bdf8;--warn:#f59e0b;--danger:#ef4444;--text:#e5e7eb;--muted:#94a3b8}
     *{box-sizing:border-box;font-family:'Inter',system-ui,sans-serif}
     body{margin:0;background:radial-gradient(circle at top,#111827,#020617);color:var(--text)}
     header{text-align:center;padding:24px}
@@ -20,13 +18,20 @@
     h2{font-size:1.1rem;margin-bottom:10px}
     label{font-size:.75rem;color:var(--muted)}
     input,select{width:100%;padding:10px;margin:6px 0 10px;border-radius:12px;border:1px solid #1e293b;background:#020617;color:var(--text)}
+    .empty{border-color:var(--danger)}
     button{padding:12px 18px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--accent),#16a34a);font-weight:700;cursor:pointer}
     .pill{padding:6px 12px;border-radius:999px;font-size:.75rem;display:inline-block;margin-top:6px}
     .good{background:rgba(34,197,94,.15);color:#86efac}
     .warn{background:rgba(245,158,11,.15);color:#fde68a}
     .bad{background:rgba(239,68,68,.15);color:#fecaca}
     .section-title{margin-top:26px;color:var(--accent2)}
+    .hint{color:var(--muted);font-size:.75rem}
     footer{text-align:center;padding:20px;color:var(--muted);font-size:.8rem}
+
+    /* Loader */
+    .loader-wrap{display:none;justify-content:center;align-items:center;margin-top:14px}
+    .loader{width:36px;height:36px;border:4px solid #1e293b;border-top:4px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -44,8 +49,8 @@
     <div>
       <label>Life Stage</label>
       <select id="lifeStage">
-        <option>Student</option>
         <option>Early Career</option>
+        <option>Student</option>
         <option>Family</option>
         <option>Pre-Retirement</option>
       </select>
@@ -53,8 +58,8 @@
     <div>
       <label>Risk Tolerance</label>
       <select id="risk">
-        <option>Low</option>
         <option>Medium</option>
+        <option>Low</option>
         <option>High</option>
       </select>
     </div>
@@ -65,9 +70,10 @@
 <div class="grid">
   <div class="card">
     <label>Primary Salary</label><input type="number" class="income" value="40000">
-    <label>Side Hustle</label><input type="number" class="income" value="6000">
-    <label>Business / Freelance</label><input type="number" class="income" value="0">
-    <label>Passive Income</label><input type="number" class="income" value="0">
+    <label>Side Hustle</label><input type="number" class="income" value="5000">
+    <label>Business / Freelance</label><input type="number" class="income" value="3000">
+    <label>Passive Income</label><input type="number" class="income" value="2000">
+    <p class="hint">Tip: Passive income improves long-term stability</p>
   </div>
 </div>
 
@@ -94,27 +100,30 @@
 <h3 class="section-title">3. Savings & Investments</h3>
 <div class="grid">
   <div class="card">
-    <label>Emergency Fund</label><input type="number" class="saving safe" value="3000">
-    <label>Fixed Deposit</label><input type="number" class="saving safe" value="4000">
-    <label>Gold</label><input type="number" class="saving safe" value="2000">
-    <label>Mutual Funds</label><input type="number" class="saving growth" value="4000">
-    <label>Direct Stocks</label><input type="number" class="saving growth" value="2000">
-    <label>Retirement (PPF / NPS)</label><input type="number" class="saving retirement" value="2500">
+    <label>Emergency Fund</label><input type="number" class="saving" value="3000">
+    <label>Fixed Deposit</label><input type="number" class="saving" value="4000">
+    <label>Gold</label><input type="number" class="saving" value="2000">
+    <label>Mutual Funds</label><input type="number" class="saving" value="4000">
+    <label>Direct Stocks</label><input type="number" class="saving" value="2000">
+    <label>Retirement (PPF / NPS)</label><input type="number" class="saving" value="2500">
+    <p class="hint">Balanced mix = safety + growth</p>
   </div>
 </div>
 
 <h3 class="section-title">4. Financial Goals</h3>
 <div class="grid">
   <div class="card">
-    <label>Short-Term Goals (1–3 yrs)</label><input type="number" value="2000" id="shortGoal">
-    <label>Mid-Term Goals (3–7 yrs)</label><input type="number" value="3000" id="midGoal">
-    <label>Long-Term Goals (7+ yrs)</label><input type="number" value="5000" id="longGoal">
+    <label>Short-Term Goals (1–3 yrs)</label><input type="number" id="shortGoal" value="2000">
+    <label>Mid-Term Goals (3–7 yrs)</label><input type="number" id="midGoal" value="3000">
+    <label>Long-Term Goals (7+ yrs)</label><input type="number" id="longGoal" value="5000">
   </div>
 </div>
 
 <h3 class="section-title">5. Analysis</h3>
 <div class="card">
   <button onclick="analyzeBudget()">Run Budget Analysis</button>
+  <div class="loader-wrap" id="loader"><div class="loader"></div></div>
+  <p id="error" class="hint"></p>
   <div id="analysis" style="display:none;margin-top:12px">
     <p>Total Income: <strong id="totalIncome"></strong></p>
     <p>Total Expenses: <strong id="totalExpenses"></strong></p>
@@ -132,33 +141,85 @@
 <footer>Real money decisions. Zero risk.</footer>
 
 <script>
-function sum(sel){return [...document.querySelectorAll(sel)].reduce((a,b)=>a+Number(b.value||0),0)}
+// Utility: sum values safely
+function sum(sel){
+  return [...document.querySelectorAll(sel)]
+    .reduce((a,b)=>a+Number(b.value||0),0)
+}
+
+// Validate that all numeric inputs are filled and non-negative
+function validateInputs(){
+  let valid=true
+  const inputs=[...document.querySelectorAll('input[type="number"]')]
+  inputs.forEach(i=>{
+    if(i.value===''||Number(i.value)<0){
+      i.classList.add('empty')
+      valid=false
+    }else{
+      i.classList.remove('empty')
+    }
+  })
+  return valid
+}
 
 function analyzeBudget(){
-  const income=sum('.income');
-  const expenses=sum('.expense');
-  const needs=sum('.need');
-  const wants=sum('.want');
-  const savings=sum('.saving');
-  const balance=income-expenses-savings;
-  const savingRatio=income?Math.round((savings/income)*100):0;
-  const nwRatio=expenses?Math.round((needs/expenses)*100):0;
+  const error=document.getElementById('error')
+  const loader=document.getElementById('loader')
+  const analysis=document.getElementById('analysis')
 
-  document.getElementById('analysis').style.display='block';
-  document.getElementById('totalIncome').innerText=`₹${income}`;
-  document.getElementById('totalExpenses').innerText=`₹${expenses}`;
-  document.getElementById('totalSavings').innerText=`₹${savings}`;
-  document.getElementById('balance').innerText=`₹${balance}`;
-  document.getElementById('savingRatio').innerText=`${savingRatio}%`;
-  document.getElementById('nwRatio').innerText=`${nwRatio}% needs`;
+  error.innerText=''
+  analysis.style.display='none'
 
-  const status=document.getElementById('status');
-  const advice=document.getElementById('advice');
+  // show loader
+  loader.style.display='flex'
 
-  if(balance<0){status.className='pill bad';status.innerText='Over Budget';advice.innerText='Your commitments exceed income. Reduce expenses or savings.'}
-  else if(savingRatio<20){status.className='pill warn';status.innerText='Low Savings';advice.innerText='Increase savings to build resilience.'}
-  else if(nwRatio<60){status.className='pill warn';status.innerText='High Lifestyle Spend';advice.innerText='Wants are dominating your budget.'}
-  else{status.className='pill good';status.innerText='Well Balanced';advice.innerText='Your budget is diversified and sustainable.'}
+  setTimeout(()=>{
+    if(!validateInputs()){
+      loader.style.display='none'
+      error.innerText='All fields are mandatory. Please enter a value (0 allowed) in highlighted fields.'
+      return
+    }
+
+    const income=sum('.income')
+    const expenses=sum('.expense')
+    const needs=sum('.need')
+    const savings=sum('.saving')
+
+    const balance=income-expenses-savings
+    const savingRatio=income?Math.round((savings/income)*100):0
+    const nwRatio=expenses?Math.round((needs/expenses)*100):0
+
+    document.getElementById('totalIncome').innerText=`₹${income}`
+    document.getElementById('totalExpenses').innerText=`₹${expenses}`
+    document.getElementById('totalSavings').innerText=`₹${savings}`
+    document.getElementById('balance').innerText=`₹${balance}`
+    document.getElementById('savingRatio').innerText=`${savingRatio}%`
+    document.getElementById('nwRatio').innerText=`${nwRatio}% needs`
+
+    const status=document.getElementById('status')
+    const advice=document.getElementById('advice')
+
+    if(balance<0){
+      status.className='pill bad'
+      status.innerText='Over Budget'
+      advice.innerText='Your commitments exceed income. Reduce expenses or savings.'
+    }else if(savingRatio<20){
+      status.className='pill warn'
+      status.innerText='Low Savings'
+      advice.innerText='Increase savings to build emergency and future security.'
+    }else if(nwRatio<60){
+      status.className='pill warn'
+      status.innerText='High Lifestyle Spend'
+      advice.innerText='Wants are dominating your budget. Consider rebalancing.'
+    }else{
+      status.className='pill good'
+      status.innerText='Well Balanced'
+      advice.innerText='Your budget is diversified, realistic, and sustainable.'
+    }
+
+    loader.style.display='none'
+    analysis.style.display='block'
+  },800)
 }
 </script>
 
