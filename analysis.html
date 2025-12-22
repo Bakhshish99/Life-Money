@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Budget Analysis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="analysis.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<header>
+  <button onclick="goBack()">← Back</button>
+  <h1>Budget Analysis</h1>
+</header>
+
+<main>
+
+<section class="card">
+  <p>Total Income: ₹<span id="income"></span></p>
+  <p>Total Expenses: ₹<span id="expenses"></span></p>
+  <p>Total Savings: ₹<span id="savings"></span></p>
+  <p>Net Balance: ₹<span id="balance"></span></p>
+  <p>Savings Ratio: <span id="savingsPct"></span>%</p>
+  <p>Needs vs Wants: <span id="nw"></span></p>
+</section>
+
+<section class="card">
+  <canvas id="barChart"></canvas>
+</section>
+
+<section class="grid">
+  <div class="card"><canvas id="pieChart"></canvas></div>
+  <div class="card"><canvas id="lineChart"></canvas></div>
+</section>
+
+</main>
+
+<script>
+const data = JSON.parse(sessionStorage.getItem('budgetData'))
+if(!data) location.href='index.html'
+
+const set=(id,v)=>document.getElementById(id).innerText=v
+
+set('income',data.income)
+set('expenses',data.needs+data.wants)
+set('savings',data.savings)
+set('balance',data.balance)
+set('savingsPct',data.savingsPct)
+set('nw',`${data.needsPct}% / ${data.wantsPct}%`)
+
+const opts={responsive:true,maintainAspectRatio:false}
+
+new Chart(barChart,{
+  type:'bar',
+  data:{
+    labels:['Needs','Wants','Savings'],
+    datasets:[
+      {label:'Actual',data:[data.needsPct,data.wantsPct,data.savingsPct]},
+      {label:'Ideal',data:[50,30,20]}
+    ]
+  },options:opts
+})
+
+new Chart(pieChart,{
+  type:'pie',
+  data:{labels:['Needs','Wants','Savings'],
+  datasets:[{data:[data.needsPct,data.wantsPct,data.savingsPct]}]},
+  options:opts
+})
+
+new Chart(lineChart,{
+  type:'line',
+  data:{
+    labels:['Needs','Wants','Savings'],
+    datasets:[
+      {label:'Actual',data:[data.needsPct,data.wantsPct,data.savingsPct]},
+      {label:'Ideal',data:[50,30,20]}
+    ]
+  },options:opts
+})
+
+function goBack(){location.href='index.html'}
+</script>
+
+</body>
+</html>
