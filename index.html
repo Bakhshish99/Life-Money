@@ -6,7 +6,35 @@
   <title>Life & Money – Budgeting Simulator</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="index.css">
+
+  <style>
+    :root{
+      --bg:#0b1220;--card:#121a2f;--accent:#22c55e;
+      --warn:#f59e0b;--danger:#ef4444;
+      --text:#e5e7eb;--muted:#94a3b8
+    }
+    *{box-sizing:border-box;font-family:'Inter',system-ui,sans-serif}
+    body{margin:0;background:radial-gradient(circle at top,#111827,#020617);color:var(--text)}
+    header{text-align:center;padding:24px}
+    header h1{margin:0;font-size:1.8rem}
+    header p{color:var(--muted)}
+    main{max-width:1200px;margin:auto;padding:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .card{background:linear-gradient(180deg,#0f172a,#020617);border-radius:18px;padding:16px;box-shadow:0 20px 40px rgba(0,0,0,.45)}
+    h2{font-size:1.1rem;margin-bottom:10px}
+    label{font-size:.75rem;color:var(--muted)}
+    input{width:100%;padding:10px;margin:6px 0 10px;border-radius:12px;border:1px solid #1e293b;background:#020617;color:var(--text)}
+    .empty{border-color:var(--danger)}
+    button{padding:12px 18px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--accent),#16a34a);font-weight:700;cursor:pointer}
+    .section-title{margin-top:26px;color:#38bdf8}
+    .hint{color:var(--muted);font-size:.75rem}
+    footer{text-align:center;padding:20px;color:var(--muted);font-size:.8rem}
+
+    /* Loader */
+    .loader-wrap{display:none;justify-content:center;align-items:center;margin-top:14px}
+    .loader{width:36px;height:36px;border:4px solid #1e293b;border-top:4px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body>
 
@@ -17,41 +45,39 @@
 
 <main>
 
-<section>
-  <h3>1. Income</h3>
+<h3 class="section-title">1. Income</h3>
+<div class="grid">
   <div class="card">
     <label>Active Income</label>
     <input type="number" class="income" value="40000">
     <label>Passive Income</label>
     <input type="number" class="income" value="2000">
   </div>
-</section>
+</div>
 
-<section>
-  <h3>2. Expenses</h3>
-  <div class="grid">
-    <div class="card">
-      <h4>Needs</h4>
-      <label>Rent / EMI</label><input type="number" class="expense need" value="12000">
-      <label>Utilities</label><input type="number" class="expense need" value="3000">
-      <label>Groceries</label><input type="number" class="expense need" value="6000">
-      <label>Transport</label><input type="number" class="expense need" value="4000">
-      <label>Healthcare</label><input type="number" class="expense need" value="2000">
-    </div>
-
-    <div class="card">
-      <h4>Wants</h4>
-      <label>Dining</label><input type="number" class="expense want" value="2000">
-      <label>Shopping</label><input type="number" class="expense want" value="2500">
-      <label>Entertainment</label><input type="number" class="expense want" value="2000">
-      <label>Subscriptions</label><input type="number" class="expense want" value="800">
-      <label>Travel</label><input type="number" class="expense want" value="1500">
-    </div>
+<h3 class="section-title">2. Expenses</h3>
+<div class="grid">
+  <div class="card">
+    <h2>Needs</h2>
+    <label>Rent / EMI</label><input type="number" class="expense need" value="12000">
+    <label>Utilities</label><input type="number" class="expense need" value="3000">
+    <label>Groceries</label><input type="number" class="expense need" value="6000">
+    <label>Transport</label><input type="number" class="expense need" value="4000">
+    <label>Healthcare</label><input type="number" class="expense need" value="2000">
   </div>
-</section>
 
-<section>
-  <h3>3. Savings</h3>
+  <div class="card">
+    <h2>Wants</h2>
+    <label>Dining</label><input type="number" class="expense want" value="2000">
+    <label>Shopping</label><input type="number" class="expense want" value="2500">
+    <label>Entertainment</label><input type="number" class="expense want" value="2000">
+    <label>Subscriptions</label><input type="number" class="expense want" value="800">
+    <label>Travel</label><input type="number" class="expense want" value="1500">
+  </div>
+</div>
+
+<h3 class="section-title">3. Savings</h3>
+<div class="grid">
   <div class="card">
     <label>Emergency Fund</label><input type="number" class="saving" value="3000">
     <label>Fixed Deposit</label><input type="number" class="saving" value="4000">
@@ -59,36 +85,41 @@
     <label>Mutual Funds</label><input type="number" class="saving" value="4000">
     <label>Stocks</label><input type="number" class="saving" value="2000">
   </div>
-</section>
+</div>
 
-<section>
+<h3 class="section-title">4. Analyze</h3>
+<div class="card">
   <button onclick="runAnalysis()">Run Budget Analysis</button>
-  <div class="loader" id="loader"></div>
-  <p class="error" id="error"></p>
-</section>
+  <div class="loader-wrap" id="loader"><div class="loader"></div></div>
+  <p id="error" class="hint"></p>
+</div>
 
 </main>
 
-<script>
-const sum = sel => [...document.querySelectorAll(sel)]
-  .reduce((a,b)=>a+Number(b.value||0),0)
+<footer>Real money decisions · Zero risk</footer>
 
-const validate = () => {
-  let ok = true
+<script>
+// helpers
+function sum(sel){
+  return [...document.querySelectorAll(sel)].reduce((a,b)=>a+Number(b.value||0),0)
+}
+
+function validate(){
+  let ok=true
   document.querySelectorAll('input').forEach(i=>{
     if(i.value===''||Number(i.value)<0){
-      i.classList.add('error-input')
+      i.classList.add('empty')
       ok=false
-    } else i.classList.remove('error-input')
+    }else i.classList.remove('empty')
   })
   return ok
 }
 
 function runAnalysis(){
-  const loader = document.getElementById('loader')
-  const error = document.getElementById('error')
+  const loader=document.getElementById('loader')
+  const error=document.getElementById('error')
   error.innerText=''
-  loader.style.display='block'
+  loader.style.display='flex'
 
   setTimeout(()=>{
     if(!validate()){
@@ -98,13 +129,16 @@ function runAnalysis(){
     }
 
     const income=sum('.income')
-    const needs=sum('.need')
     const expenses=sum('.expense')
+    const needs=sum('.need')
     const wants=expenses-needs
     const savings=sum('.saving')
 
     const data={
-      income, needs, wants, savings,
+      income,
+      needs,
+      wants,
+      savings,
       balance: income-expenses-savings,
       needsPct: Math.round(needs/income*100),
       wantsPct: Math.round(wants/income*100),
@@ -113,7 +147,7 @@ function runAnalysis(){
 
     sessionStorage.setItem('budgetData',JSON.stringify(data))
     window.location.href='analysis.html'
-  },700)
+  },800)
 }
 </script>
 
