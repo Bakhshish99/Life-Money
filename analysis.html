@@ -1,227 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Budget Analysis</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Budget Analysis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-:root{
-  --bg:#020617;--card:#0f172a;--text:#e5e7eb;
-  --good:#86efac;--warn:#fde68a;--bad:#fecaca
-}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter}
-header{text-align:center;padding:20px}
-main{max-width:1100px;margin:auto;padding:16px}
-.card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
-h2{margin-bottom:10px}
-.metric{font-size:.9rem;margin:6px 0}
+  <style>
+    :root {
+      --bg: #020617;
+      --card: #0f172a;
+      --text: #e5e7eb;
+      --good: #86efac;
+      --warn: #fde68a;
+      --bad: #fecaca
+    }
 
-.chart-box{
-  height:320px;
-  position:relative;
-}
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter
+    }
 
-canvas{
-  width:100% !important;
-  height:100% !important;
-}
+    header {
+      text-align: center;
+      padding: 20px
+    }
 
-.good{color:var(--good)}
-.warn{color:var(--warn)}
-.bad{color:var(--bad)}
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 16px
+    }
 
-button{
-  background:#22c55e;
-  border:none;
-  border-radius:10px;
-  padding:10px 16px;
-  font-weight:700;
-  cursor:pointer;
-}
-.top-actions{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-</style>
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px
+    }
+
+    h2 {
+      margin-bottom: 10px
+    }
+
+    .metric {
+      font-size: .9rem;
+      margin: 6px 0
+    }
+
+    .chart-box {
+      height: 320px;
+      position: relative;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .good {
+      color: var(--good)
+    }
+
+    .warn {
+      color: var(--warn)
+    }
+
+    .bad {
+      color: var(--bad)
+    }
+
+    button {
+      background: #22c55e;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <h1>Budget Analysis Dashboard</h1>
-  <p>See your money clearly</p>
-</header>
+  <header>
+    <h1>Budget Analysis Dashboard</h1>
+    <p>See your money clearly</p>
+  </header>
 
-<main>
+  <main>
 
-<div class="top-actions">
-  <button onclick="goBack()">← Go Back</button>
-  <strong id="verdict"></strong>
-</div>
+    <div class="top-actions">
+      <button onclick="goBack()">← Go Back</button>
+      <strong id="verdict"></strong>
+    </div>
 
-<!-- SUMMARY -->
-<div class="card">
-  <h2>Summary</h2>
-  <p class="metric">Total Income: ₹<span id="income"></span></p>
-  <p class="metric">Needs: <span id="needs"></span>% | Wants: <span id="wants"></span>% | Savings: <span id="savings"></span>%</p>
-  <p class="metric">Budget Health Score: <strong id="score"></strong>/100</p>
-</div>
+    <!-- SUMMARY -->
+    <div class="card">
+      <h2>Summary</h2>
+      <p class="metric">Total Income: ₹<span id="income"></span></p>
+      <p class="metric">Needs: <span id="needs"></span>% | Wants: <span id="wants"></span>% | Savings: <span
+          id="savings"></span>%</p>
+      <p class="metric">Budget Health Score: <strong id="score"></strong>/100</p>
+    </div>
 
-<!-- TOTALS -->
-<div class="card">
-  <h2>Detailed Financial Breakdown</h2>
-  <p>Total Income: <strong id="totalIncome"></strong></p>
-  <p>Total Expenses: <strong id="totalExpenses"></strong></p>
-  <p>Total Savings: <strong id="totalSavings"></strong></p>
-  <p>Net Balance: <strong id="balance"></strong></p>
-  <p>Savings Ratio: <strong id="savingRatio"></strong></p>
-  <p>Needs vs Wants: <strong id="nwRatio"></strong></p>
-</div>
+    <!-- TOTALS -->
+    <div class="card">
+      <h2>Detailed Financial Breakdown</h2>
+      <p>Total Income: <strong id="totalIncome"></strong></p>
+      <p>Total Expenses: <strong id="totalExpenses"></strong></p>
+      <p>Total Savings: <strong id="totalSavings"></strong></p>
+      <p>Net Balance: <strong id="balance"></strong></p>
+      <p>Savings Ratio: <strong id="savingRatio"></strong></p>
+      <p>Needs vs Wants: <strong id="nwRatio"></strong></p>
+    </div>
 
-<!-- GAP -->
-<div class="card">
-  <h2>Gap from Ideal (50–30–20)</h2>
-  <p class="metric">Needs Gap: <span id="needsGap"></span>%</p>
-  <p class="metric">Wants Gap: <span id="wantsGap"></span>%</p>
-  <p class="metric">Savings Gap: <span id="savingsGap"></span>%</p>
-</div>
+    <!-- GAP -->
+    <div class="card">
+      <h2>Gap from Ideal (50–30–20)</h2>
+      <p class="metric">Needs Gap: <span id="needsGap"></span>%</p>
+      <p class="metric">Wants Gap: <span id="wantsGap"></span>%</p>
+      <p class="metric">Savings Gap: <span id="savingsGap"></span>%</p>
+    </div>
 
-<!-- CHARTS -->
-<div class="grid">
-  <div class="card">
-    <h2>Actual vs Ideal</h2>
-    <div class="chart-box"><canvas id="barChart"></canvas></div>
-  </div>
+    <!-- CHARTS -->
+    <div class="grid">
+      <div class="card">
+        <h2>Actual vs Ideal</h2>
+        <div class="chart-box"><canvas id="barChart"></canvas></div>
+      </div>
 
-  <div class="card">
-    <h2>Budget Distribution</h2>
-    <div class="chart-box"><canvas id="pieChart"></canvas></div>
-  </div>
-</div>
+      <div class="card">
+        <h2>Budget Distribution</h2>
+        <div class="chart-box"><canvas id="pieChart"></canvas></div>
+      </div>
+    </div>
 
-<div class="card">
-  <h2>Alignment Trend</h2>
-  <div class="chart-box"><canvas id="lineChart"></canvas></div>
-</div>
+    <div class="card">
+      <h2>Alignment Trend</h2>
+      <div class="chart-box"><canvas id="lineChart"></canvas></div>
+    </div>
 
-<!-- INSIGHTS -->
-<div class="card">
-  <h2>Actionable Insights</h2>
-  <ul id="insights"></ul>
-</div>
+    <!-- INSIGHTS -->
+    <div class="card">
+      <h2>Actionable Insights</h2>
+      <ul id="insights"></ul>
+    </div>
 
-</main>
+  </main>
 
-<script>
-// ---------- NAV ----------
-function goBack(){
-  window.location.href='index.html'
-}
+  <script>
+    // ---------- NAV ----------
+    function goBack() {
+      window.location.href = 'index.html'
+    }
 
-// ---------- DATA ----------
-const data = JSON.parse(sessionStorage.getItem('budgetData'))
-if(!data) goBack()
+    // ---------- DATA ----------
+    const data = JSON.parse(sessionStorage.getItem('budgetData'))
+    if (!data) goBack()
 
-const IDEAL = {needs:50,wants:30,savings:20}
+    const IDEAL = { needs: 50, wants: 30, savings: 20 }
 
-// Percentages
-const {needsPct,wantsPct,savingsPct} = data
+    // Percentages
+    const { needsPct, wantsPct, savingsPct } = data
 
-// Totals
-const totalIncome = data.income
-const totalExpenses = data.needs + data.wants
-const totalSavings = data.savings
-const netBalance = data.balance
+    // Totals
+    const totalIncome = data.income
+    const totalExpenses = data.needs + data.wants
+    const totalSavings = data.savings
+    const netBalance = data.balance
 
-// Gaps
-const gaps = {
-  needs: needsPct - IDEAL.needs,
-  wants: wantsPct - IDEAL.wants,
-  savings: savingsPct - IDEAL.savings
-}
+    // Gaps
+    const gaps = {
+      needs: needsPct - IDEAL.needs,
+      wants: wantsPct - IDEAL.wants,
+      savings: savingsPct - IDEAL.savings
+    }
 
-// Score
-let score = 100 - (Math.abs(gaps.needs)+Math.abs(gaps.wants)+Math.abs(gaps.savings))
-score = Math.max(score,0)
+    // Score
+    let score = 100 - (Math.abs(gaps.needs) + Math.abs(gaps.wants) + Math.abs(gaps.savings))
+    score = Math.max(score, 0)
 
-// ---------- UI POPULATION ----------
-const set = (id,val)=>document.getElementById(id).innerText=val
+    // ---------- UI POPULATION ----------
+    const set = (id, val) => document.getElementById(id).innerText = val
 
-set('income',totalIncome)
-set('needs',needsPct)
-set('wants',wantsPct)
-set('savings',savingsPct)
-set('score',score)
+    set('income', totalIncome)
+    set('needs', needsPct)
+    set('wants', wantsPct)
+    set('savings', savingsPct)
+    set('score', score)
 
-set('totalIncome',`₹${totalIncome}`)
-set('totalExpenses',`₹${totalExpenses}`)
-set('totalSavings',`₹${totalSavings}`)
-set('balance',`₹${netBalance}`)
-set('savingRatio',`${savingsPct}%`)
-set('nwRatio',`${needsPct}% needs / ${wantsPct}% wants`)
+    set('totalIncome', `₹${totalIncome}`)
+    set('totalExpenses', `₹${totalExpenses}`)
+    set('totalSavings', `₹${totalSavings}`)
+    set('balance', `₹${netBalance}`)
+    set('savingRatio', `${savingsPct}%`)
+    set('nwRatio', `${needsPct}% needs / ${wantsPct}% wants`)
 
-set('needsGap',gaps.needs)
-set('wantsGap',gaps.wants)
-set('savingsGap',gaps.savings)
+    set('needsGap', gaps.needs)
+    set('wantsGap', gaps.wants)
+    set('savingsGap', gaps.savings)
 
-// Verdict
-const verdict=document.getElementById('verdict')
-verdict.className = netBalance<0?'bad':score<60?'warn':'good'
-verdict.innerText =
-  netBalance<0?'Over Budget':
-  score<60?'Needs Improvement':
-  'Healthy Budget'
+    // Verdict
+    const verdict = document.getElementById('verdict')
+    verdict.className = netBalance < 0 ? 'bad' : score < 60 ? 'warn' : 'good'
+    verdict.innerText =
+      netBalance < 0 ? 'Over Budget' :
+        score < 60 ? 'Needs Improvement' :
+          'Healthy Budget'
 
-// Insights
-const insights=document.getElementById('insights')
-if(gaps.needs>0) insights.innerHTML+=`<li>Reduce fixed costs by ${gaps.needs}% of income.</li>`
-if(gaps.wants>0) insights.innerHTML+=`<li>Cut lifestyle spending by ${gaps.wants}%.</li>`
-if(gaps.savings<0) insights.innerHTML+=`<li>Increase savings by ${Math.abs(gaps.savings)}%.</li>`
-if(!insights.innerHTML) insights.innerHTML='<li>Excellent balance. Maintain this structure.</li>'
+    // Insights
+    const insights = document.getElementById('insights')
+    if (gaps.needs > 0) insights.innerHTML += `<li>Reduce fixed costs by ${gaps.needs}% of income.</li>`
+    if (gaps.wants > 0) insights.innerHTML += `<li>Cut lifestyle spending by ${gaps.wants}%.</li>`
+    if (gaps.savings < 0) insights.innerHTML += `<li>Increase savings by ${Math.abs(gaps.savings)}%.</li>`
+    if (!insights.innerHTML) insights.innerHTML = '<li>Excellent balance. Maintain this structure.</li>'
 
-// ---------- CHARTS ----------
-const commonOptions = {responsive:true,maintainAspectRatio:false}
+    // ---------- CHARTS ----------
+    const commonOptions = { responsive: true, maintainAspectRatio: false }
 
-new Chart(barChart,{
-  type:'bar',
-  data:{
-    labels:['Needs','Wants','Savings'],
-    datasets:[
-      {label:'Actual %',data:[needsPct,wantsPct,savingsPct]},
-      {label:'Ideal %',data:[50,30,20]}
-    ]
-  },
-  options:commonOptions
-})
+    new Chart(barChart, {
+      type: 'bar',
+      data: {
+        labels: ['Needs', 'Wants', 'Savings'],
+        datasets: [
+          { label: 'Actual %', data: [needsPct, wantsPct, savingsPct] },
+          { label: 'Ideal %', data: [50, 30, 20] }
+        ]
+      },
+      options: commonOptions
+    })
 
-new Chart(pieChart,{
-  type:'pie',
-  data:{
-    labels:['Needs','Wants','Savings'],
-    datasets:[{data:[needsPct,wantsPct,savingsPct]}]
-  },
-  options:commonOptions
-})
+    new Chart(pieChart, {
+      type: 'pie',
+      data: {
+        labels: ['Needs', 'Wants', 'Savings'],
+        datasets: [{ data: [needsPct, wantsPct, savingsPct] }]
+      },
+      options: commonOptions
+    })
 
-new Chart(lineChart,{
-  type:'line',
-  data:{
-    labels:['Needs','Wants','Savings'],
-    datasets:[
-      {label:'Actual',data:[needsPct,wantsPct,savingsPct]},
-      {label:'Ideal',data:[50,30,20]}
-    ]
-  },
-  options:commonOptions
-})
-</script>
+    new Chart(lineChart, {
+      type: 'line',
+      data: {
+        labels: ['Needs', 'Wants', 'Savings'],
+        datasets: [
+          { label: 'Actual', data: [needsPct, wantsPct, savingsPct] },
+          { label: 'Ideal', data: [50, 30, 20] }
+        ]
+      },
+      options: commonOptions
+    })
+  </script>
 
 </body>
+
 </html>
